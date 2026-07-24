@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard · Microcréditos Digitales MYPE · Disposición de Planta</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f0f5;
+            color: #1a1a2e;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #2d1b69 0%, #4a2c8a 40%, #6b4c9a 100%);
+            border-radius: 28px;
+            padding: 28px 36px;
+            margin-bottom: 24px;
+            color: #fff;
+            box-shadow: 0 12px 30px rgba(45, 27, 105, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 215, 0, 0.06);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        .header h1 i {
+            color: #fbbf24;
+            margin-right: 12px;
+        }
+        .header .sub {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+        .header-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        .header-badges .badge {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(4px);
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .header-badges .badge i {
+            color: #fbbf24;
+            margin-right: 6px;
+        }
+        .header-right {
+            text-align: right;
+            position: relative;
+            z-index: 1;
+        }
+        .header-right .date {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+        .header-right .status {
+            background: #10b981;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        /* TOOLBAR GLOBAL */
+        .toolbar-global {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 9px 22px;
+            border: none;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+            color: #1a1a2e;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+        .btn-primary {
+            background: #4a2c8a;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #3a1f6e;
+        }
+        .btn-accent {
+            background: #f59e0b;
+            color: #1a1a1a;
+        }
+        .btn-accent:hover {
+            background: #d48a08;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #d1d5db;
+        }
+        .btn-outline:hover {
+            border-color: #4a2c8a;
+            color: #4a2c8a;
+        }
+        .btn-pdf-chapter {
+            background: #4a2c8a;
+            color: #fff;
+            padding: 4px 14px;
+            font-size: 0.7rem;
+            border-radius: 40px;
+        }
+        .btn-pdf-chapter:hover {
+            background: #3a1f6e;
+        }
+        .btn-pdf-chapter i {
+            margin-right: 4px;
+        }
+        .btn-print-chapter {
+            background: #10b981;
+            color: #fff;
+            padding: 4px 14px;
+            font-size: 0.7rem;
+            border-radius: 40px;
+        }
+        .btn-print-chapter:hover {
+            background: #059669;
+        }
+        .btn-print-chapter i {
+            margin-right: 4px;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 24px;
+            background: #fff;
+            padding: 10px 14px;
+            border-radius: 18px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+        }
+        .tab-btn {
+            padding: 7px 16px;
+            border: none;
+            border-radius: 40px;
+            background: #f3f4f6;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            color: #374151;
+        }
+        .tab-btn:hover {
+            background: #e5e7eb;
+            transform: scale(1.02);
+        }
+        .tab-btn.active {
+            background: #4a2c8a;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(74, 44, 138, 0.3);
+        }
+        .tab-btn i {
+            margin-right: 6px;
+        }
+
+        /* CHAPTER CARDS */
+        .chapter-card {
+            display: none;
+            background: #fff;
+            border-radius: 28px;
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e5e7eb;
+            animation: fadeSlide 0.35s ease forwards;
+            position: relative;
+        }
+        .chapter-card.active {
+            display: block;
+        }
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chapter-card .chapter-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #ede9fe;
+            flex-wrap: wrap;
+        }
+
+        .chapter-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d1b69;
+            border-bottom: 3px solid #ede9fe;
+            padding-bottom: 12px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .chapter-card h2 i {
+            color: #4a2c8a;
+            font-size: 1.3rem;
+        }
+        .chapter-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #4a2c8a;
+            margin: 16px 0 8px 0;
+        }
+        .chapter-card p {
+            line-height: 1.7;
+            color: #374151;
+        }
+        .chapter-card ul,
+        .chapter-card ol {
+            padding-left: 22px;
+            line-height: 1.9;
+            color: #374151;
+        }
+
+        /* GRIDS */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 18px;
+        }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* STAT BOX */
+        .stat-box {
+            background: #f8f7fc;
+            border-radius: 18px;
+            padding: 16px 20px;
+            border: 1px solid #ede9fe;
+            transition: 0.2s;
+        }
+        .stat-box:hover {
+            border-color: #c4b5d4;
+        }
+        .stat-box .number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #4a2c8a;
+            line-height: 1.2;
+        }
+        .stat-box .number i {
+            font-size: 1.4rem;
+            color: #f59e0b;
+            margin-right: 6px;
+        }
+        .stat-box .label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        .stat-box .trend {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .stat-box .trend.up {
+            color: #10b981;
+        }
+        .stat-box .trend.down {
+            color: #ef4444;
+        }
+
+        /* TABLES */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 14px;
+            border: 1px solid #ede9fe;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        th,
+        td {
+            border: 1px solid #ede9fe;
+            padding: 8px 12px;
+            text-align: center;
+        }
+        th {
+            background: #f5f3ff;
+            font-weight: 700;
+            color: #2d1b69;
+        }
+        tr:nth-child(even) {
+            background: #faf9fe;
+        }
+
+        /* CHARTS */
+        .chart-container {
+            background: #fff;
+            border-radius: 18px;
+            padding: 10px 6px;
+            border: 1px solid #ede9fe;
+            position: relative;
+        }
+        .chart-container canvas {
+            max-height: 200px;
+            width: 100% !important;
+        }
+
+        /* CONCLUSION BOX */
+        .conclusion-box {
+            background: #f5f3ff;
+            border-left: 5px solid #4a2c8a;
+            padding: 16px 22px;
+            border-radius: 18px;
+            margin-top: 16px;
+        }
+        .conclusion-box strong {
+            color: #2d1b69;
+        }
+
+        /* BADGE PILL */
+        .badge-pill {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 40px;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+        .badge-purple {
+            background: #ede9fe;
+            color: #4a2c8a;
+        }
+        .badge-yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .badge-green {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .badge-red {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .badge-blue {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #6b7280;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* ===== ESTILOS PARA IMPRESIÓN DE CAPÍTULO INDIVIDUAL ===== */
+        @media print {
+            /* Ocultar todo el body */
+            body * {
+                visibility: hidden !important;
+            }
+
+            /* Mostrar solo el área de impresión */
+            #printArea,
+            #printArea * {
+                visibility: visible !important;
+            }
+
+            #printArea {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                padding: 20px !important;
+                background: white !important;
+                z-index: 99999 !important;
+                display: block !important;
+                visibility: visible !important;
+            }
+
+            #printArea .chapter-toolbar {
+                display: none !important;
+            }
+
+            #printArea .chart-container canvas {
+                max-height: 180px !important;
+            }
+
+            #printArea .grid-2 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 16px !important;
+            }
+
+            #printArea .grid-4 {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr 1fr 1fr !important;
+                gap: 12px !important;
+            }
+
+            #printArea .badge-pill {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            #printArea .stat-box {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            #printArea .conclusion-box {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            #printArea .header-badges .badge {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            #printArea .header {
+                background: #4a2c8a !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            #printArea .header .badge {
+                background: rgba(255, 255, 255, 0.15) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            #printArea .header-right .status {
+                background: #10b981 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            #printArea .table-wrap {
+                overflow-x: visible !important;
+            }
+
+            #printArea table {
+                font-size: 0.75rem !important;
+            }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .grid-4 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 820px) {
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .header {
+                padding: 20px 18px;
+            }
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            .chapter-card {
+                padding: 18px 16px;
+            }
+            .tabs {
+                max-height: 160px;
+            }
+            .grid-4 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            .tab-btn {
+                font-size: 0.6rem;
+                padding: 4px 10px;
+            }
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+            .header-right {
+                text-align: left;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="reportContainer">
+
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-top">
+                <div>
+                    <h1><i class="fas fa-chart-pie"></i> Microcréditos Digitales · MYPE</h1>
+                    <div class="sub">Dashboard de Disposición de Planta · QFD + Inclusión Financiera · Perú 2025</div>
+                    <div class="header-badges">
+                        <span class="badge"><i class="fas fa-brain"></i> Scoring IA 84.5 pts</span>
+                        <span class="badge"><i class="fas fa-clock"></i> Aprobación &lt; 5h</span>
+                        <span class="badge"><i class="fas fa-percent"></i> 50% exclusión</span>
+                        <span class="badge"><i class="fas fa-trend-up"></i> +187% búsquedas</span>
+                        <span class="badge"><i class="fas fa-users"></i> 25 colaboradores</span>
+                        <span class="badge"><i class="fas fa-building"></i> 300 m²</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="date"><i class="far fa-calendar"></i> 2026-07-24</div>
+                    <div class="status"><i class="fas fa-circle"></i> Operativo</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- TOOLBAR GLOBAL -->
+        <div class="toolbar-global">
+            <button class="btn btn-outline" id="toggleAllBtn"><i class="fas fa-expand"></i> Ver todos</button>
+        </div>
+
+        <!-- TABS -->
+        <nav class="tabs" id="tabContainer">
+            <button class="tab-btn active" data-chapter="cap1"><i class="fas fa-book"></i> Cap.1 · Previos</button>
+            <button class="tab-btn" data-chapter="cap2"><i class="fas fa-map-pin"></i> Cap.2 · Localización</button>
+            <button class="tab-btn" data-chapter="cap3"><i class="fas fa-ruler"></i> Cap.3 · Tamaño</button>
+            <button class="tab-btn" data-chapter="cap4"><i class="fas fa-building"></i> Cap.4 · Disposición</button>
+            <button class="tab-btn" data-chapter="cap5"><i class="fas fa-boxes"></i> Cap.5 · Material</button>
+            <button class="tab-btn" data-chapter="cap6"><i class="fas fa-microchip"></i> Cap.6 · Maquinaria</button>
+            <button class="tab-btn" data-chapter="cap7"><i class="fas fa-users"></i> Cap.7 · Hombre</button>
+            <button class="tab-btn" data-chapter="cap8"><i class="fas fa-truck"></i> Cap.8 · Movimiento</button>
+            <button class="tab-btn" data-chapter="cap9"><i class="fas fa-city"></i> Cap.9 · Edificio</button>
+            <button class="tab-btn" data-chapter="cap10"><i class="fas fa-hourglass-half"></i> Cap.10 · Espera</button>
+            <button class="tab-btn" data-chapter="cap11"><i class="fas fa-concierge-bell"></i> Cap.11 · Servicio</button>
+            <button class="tab-btn" data-chapter="cap12"><i class="fas fa-leaf"></i> Cap.12 · Medio Ambiente</button>
+            <button class="tab-btn" data-chapter="cap13"><i class="fas fa-sync-alt"></i> Cap.13 · Cambio</button>
+            <button class="tab-btn" data-chapter="cap14"><i class="fas fa-calculator"></i> Cap.14 · Áreas</button>
+            <button class="tab-btn" data-chapter="cap15"><i class="fas fa-sitemap"></i> Cap.15 · Distribución Gral.</button>
+            <button class="tab-btn" data-chapter="cap16"><i class="fas fa-route"></i> Cap.16 · Distribución Detalle</button>
+            <button class="tab-btn" data-chapter="cap17"><i class="fas fa-balance-scale"></i> Cap.17 · Evaluación</button>
+            <button class="tab-btn" data-chapter="cap18"><i class="fas fa-rocket"></i> Cap.18 · Implementación</button>
+        </nav>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 1: ESTUDIOS PREVIOS                                     -->
+        <!-- ============================================================ -->
+        <section class="chapter-card active" id="cap1">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap1')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap1', 'Cap1_Previos')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-book-open"></i> Capítulo 1 · ESTUDIOS PREVIOS</h2>
+            <!-- KPIs Rápidos -->
+            <div class="grid-4" style="margin-bottom:20px;">
+                <div class="stat-box">
+                    <div class="number"><i class="fas fa-percent"></i>99%</div>
+                    <div class="label">MYPE del total empresarial</div>
+                    <div class="trend up"><i class="fas fa-arrow-up"></i> Fuente: INEI 2024</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number"><i class="fas fa-arrow-up"></i>+187%</div>
+                    <div class="label">Crecimiento búsquedas</div>
+                    <div class="trend up"><i class="fas fa-arrow-up"></i> Google Trends</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number"><i class="fas fa-exclamation-triangle"></i>50%</div>
+                    <div class="label">MYPE sin crédito formal</div>
+                    <div class="trend down"><i class="fas fa-arrow-down"></i> SBS 2023</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number"><i class="fas fa-building"></i>2.3M</div>
+                    <div class="label">MYPE formales en Perú</div>
+                    <div class="trend up"><i class="fas fa-arrow-up"></i> Anuario INEI 2024</div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-chart-line"></i> 1. Estudio de Mercado</h3>
+                    <div class="stat-box">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;">Contexto actual</h4>
+                        <ul>
+                            <li>Las MYPE representan el <strong>99,3%</strong> del tejido empresarial formal (2 331 173 unidades).</li>
+                            <li>Cerca del <strong>50%</strong> enfrenta barreras de acceso al crédito formal.</li>
+                            <li>Brecha identificada: <strong>S/ 500 – S/ 5,000</strong> con desembolso en <strong>&lt; 24h</strong>.</li>
+                            <li>Comercio (44,2%) y servicios (41,5%) concentran el <strong>85,7%</strong> de las Mipyme.</li>
+                        </ul>
+                    </div>
+                    <div class="stat-box" style="margin-top:12px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;">Segmentación por ventas</h4>
+                        <ul>
+                            <li><strong>46,8%</strong> vende menos de 2 UIT/año</li>
+                            <li><strong>74,3%</strong> vende menos de 13 UIT/año</li>
+                            <li>Justifica microcréditos de bajo monto</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h3><i class="fas fa-cubes"></i> 2. Diseño del Producto (QFD)</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Parámetro técnico</th><th>Puntaje</th><th>Prioridad</th></tr></thead>
+                            <tbody>
+                                <tr><td><i class="fas fa-brain"></i> Scoring Automatizado</td><td><strong>84.5</strong></td><td><span class="badge-pill badge-yellow">🥇 1º</span></td></tr>
+                                <tr><td><i class="fas fa-clock"></i> Tiempo de Aprobación</td><td><strong>73.2</strong></td><td><span class="badge-pill badge-purple">🥈 2º</span></td></tr>
+                                <tr><td><i class="fas fa-file-alt"></i> Documentación Digital</td><td>71.0</td><td>3º</td></tr>
+                                <tr><td><i class="fas fa-coins"></i> Desembolso Inmediato</td><td>70.8</td><td>4º</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="chart-container" style="margin-top:12px;">
+                        <canvas id="qfdScoresChart"></canvas>
+                    </div>
+                    <h3 style="margin-top:16px;"><i class="fas fa-project-diagram"></i> 3. Diseño del Proceso</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle" style="color:#4a2c8a;"></i> Onboarding 100% digital (biométrico)</li>
+                        <li><i class="fas fa-check-circle" style="color:#4a2c8a;"></i> Scoring predictivo con IA (datos alternativos)</li>
+                        <li><i class="fas fa-check-circle" style="color:#4a2c8a;"></i> Aprobación en &lt; 5 horas</li>
+                        <li><i class="fas fa-check-circle" style="color:#4a2c8a;"></i> Desembolso automático (Yape / Plin)</li>
+                    </ul>
+                    <div class="conclusion-box">
+                        <strong>✅ Conclusión:</strong> El QFD Fase I prioriza el <strong>Scoring Automatizado</strong> (84.5 pts) y el <strong>Tiempo de Aprobación</strong> (73.2 pts) como factores críticos para la inclusión financiera de MYPE.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 2: LOCALIZACIÓN                                        -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap2">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap2')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap2', 'Cap2_Localizacion')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-map-pin"></i> Capítulo 2 · LOCALIZACIÓN DE PLANTA</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-location-dot"></i> Ubicaciones posibles</h3>
+                    <ul>
+                        <li><strong>Lima Metropolitana</strong> — 45% de MYPE · Mayor conectividad</li>
+                        <li><strong>Arequipa</strong> — 18% de MYPE · Talento tecnológico</li>
+                        <li><strong>Piura</strong> — alta demanda digital · Crecimiento comercial</li>
+                        <li><strong>Huánuco (Amarilis)</strong> — Bajo costo · Talento local · Conectividad</li>
+                    </ul>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-calculator"></i> Factor Ponderado</h4>
+                        <table>
+                            <thead><tr><th>Factor</th><th>Peso</th><th>Huánuco</th><th>Lima</th><th>Arequipa</th></tr></thead>
+                            <tbody>
+                                <tr><td>Talento humano</td><td>0.22</td><td>7</td><td>8</td><td>7</td></tr>
+                                <tr><td>Conectividad</td><td>0.20</td><td>7</td><td>8</td><td>8</td></tr>
+                                <tr><td>Costo alquiler</td><td>0.18</td><td>9</td><td>4</td><td>5</td></tr>
+                                <tr><td>Proximidad mercado</td><td>0.15</td><td>6</td><td>9</td><td>7</td></tr>
+                                <tr><td>Seguridad</td><td>0.10</td><td>7</td><td>4</td><td>6</td></tr>
+                                <tr><td>Transporte</td><td>0.08</td><td>7</td><td>5</td><td>6</td></tr>
+                                <tr><td>Trámites municipales</td><td>0.07</td><td>6</td><td>5</td><td>5</td></tr>
+                                <tr><td><strong>Total</strong></td><td></td><td><strong>7.14</strong></td><td><strong>6.58</strong></td><td><strong>6.52</strong></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class="chart-container">
+                        <canvas id="locationChart"></canvas>
+                    </div>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-coins"></i> Costo anual estimado</h4>
+                        <ul>
+                            <li><strong>Huánuco:</strong> S/ 642,000</li>
+                            <li><strong>Lima:</strong> S/ 912,000</li>
+                            <li><strong>Arequipa:</strong> S/ 770,400</li>
+                        </ul>
+                    </div>
+                    <div class="conclusion-box" style="margin-top:14px;">
+                        <strong>✅ Decisión final:</strong> Huánuco, distrito de Amarilis (zona Paucarbamba) — mayor puntaje (7.14) y menor costo anual (S/ 642,000, 30% menos que Lima).
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 3: TAMAÑO                                              -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap3">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap3')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap3', 'Cap3_Tamano')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-ruler"></i> Capítulo 3 · TAMAÑO DE PLANTA</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-industry"></i> Capacidad de producción</h3>
+                    <ul>
+                        <li><strong>Capacidad instalada:</strong> 24,000 solicitudes/año</li>
+                        <li><strong>Capacidad efectiva:</strong> 20,400 solicitudes/año (85% eficiencia)</li>
+                        <li><strong>Producción real (Año 1):</strong> 9,800 solicitudes</li>
+                        <li><strong>Utilización (Año 1):</strong> 40.8%</li>
+                        <li><strong>Punto de equilibrio:</strong> 2,222 créditos/año</li>
+                    </ul>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-coins"></i> Inversión inicial</h4>
+                        <ul>
+                            <li><strong>Acondicionamiento:</strong> S/ 86,000</li>
+                            <li><strong>Mobiliario:</strong> S/ 94,000</li>
+                            <li><strong>Equipos cómputo:</strong> S/ 120,000</li>
+                            <li><strong>Infraestructura TI:</strong> S/ 98,000</li>
+                            <li><strong>Licencias:</strong> S/ 62,000</li>
+                            <li><strong>Capital trabajo:</strong> S/ 25,000</li>
+                            <li><strong>TOTAL:</strong> S/ 485,000</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="chart-container">
+                        <canvas id="capacityChart"></canvas>
+                    </div>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-layer-group"></i> Niveles de capacidad (proyección)</h4>
+                        <ul>
+                            <li><strong>Año 1:</strong> 9,800 solicitudes</li>
+                            <li><strong>Año 2:</strong> 16,200 solicitudes</li>
+                            <li><strong>Año 3:</strong> 21,500 solicitudes</li>
+                            <li><strong>Año 5:</strong> 30,100 solicitudes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 4: DISPOSICIÓN DE PLANTA                                -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap4">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap4')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap4', 'Cap4_Disposicion')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-building"></i> Capítulo 4 · DISPOSICIÓN DE PLANTA</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-th-large"></i> Tipos de disposición</h3>
+                    <ul>
+                        <li><strong>Por proceso:</strong> Áreas funcionales (análisis, aprobación, desembolso)</li>
+                        <li><strong>Por producto:</strong> Flujo continuo de solicitudes</li>
+                        <li><strong>Celular:</strong> Equipos multidisciplinarios por segmento</li>
+                        <li><strong>Híbrida:</strong> Combinación de las anteriores <span class="badge-pill badge-purple">✅ Seleccionada</span></li>
+                    </ul>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-arrows-split-up-and-left"></i> Distribución de áreas</h4>
+                        <ul>
+                            <li><strong>Análisis:</strong> 120 m² (24%)</li>
+                            <li><strong>Aprobación:</strong> 80 m² (16%)</li>
+                            <li><strong>Desembolso:</strong> 60 m² (12%)</li>
+                            <li><strong>Soporte:</strong> 50 m² (10%)</li>
+                            <li><strong>Administración:</strong> 70 m² (14%)</li>
+                            <li><strong>Servicios:</strong> 120 m² (24%)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h3><i class="fas fa-list-check"></i> Principios aplicados</h3>
+                    <ul>
+                        <li><i class="fas fa-check" style="color:#4a2c8a;"></i> Flujo de trabajo sin interrupciones</li>
+                        <li><i class="fas fa-check" style="color:#4a2c8a;"></i> Distancia mínima de recorrido</li>
+                        <li><i class="fas fa-check" style="color:#4a2c8a;"></i> Flexibilidad para crecimiento</li>
+                        <li><i class="fas fa-check" style="color:#4a2c8a;"></i> Seguridad y confort del personal</li>
+                        <li><i class="fas fa-check" style="color:#4a2c8a;"></i> Visibilidad y control de operaciones</li>
+                        <li><i class="fas fa-check" style="color:#4a2c8a;"></i> Cumplimiento normativo (SBS, INDECOPI)</li>
+                    </ul>
+                    <div class="chart-container" style="margin-top:14px;">
+                        <canvas id="layoutChart"></canvas>
+                    </div>
+                    <div class="conclusion-box" style="margin-top:14px;">
+                        <strong>✅ Selección:</strong> Disposición híbrida (por proceso para áreas administrativas + celular para equipos de análisis)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 5: FACTOR MATERIAL                                      -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap5">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap5')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap5', 'Cap5_Material')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-boxes"></i> Capítulo 5 · FACTOR MATERIAL</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-cube"></i> Elementos del factor material</h3>
+                    <ul>
+                        <li><strong>Materias primas:</strong> Datos de clientes, documentos digitales</li>
+                        <li><strong>Materiales en proceso:</strong> Solicitudes en análisis</li>
+                        <li><strong>Productos terminados:</strong> Créditos aprobados</li>
+                    </ul>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-chart-pie"></i> Análisis P-Q</h4>
+                        <table>
+                            <thead><tr><th>Producto</th><th>Volumen</th><th>Clase</th></tr></thead>
+                            <tbody>
+                                <tr><td>S/ 500 – 1,000</td><td>45%</td><td><span class="badge-pill badge-yellow">A</span></td></tr>
+                                <tr><td>S/ 1,001 – 3,000</td><td>35%</td><td><span class="badge-pill badge-purple">B</span></td></tr>
+                                <tr><td>S/ 3,001 – 5,000</td><td>20%</td><td><span class="badge-pill badge-green">C</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class="chart-container">
+                        <canvas id="abcChart"></canvas>
+                    </div>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-chart-simple"></i> Curva ABC</h4>
+                        <ul>
+                            <li><strong>Clase A (45%):</strong> S/500-1,000 — Mayor rotación</li>
+                            <li><strong>Clase B (35%):</strong> S/1,001-3,000 — Rotación media</li>
+                            <li><strong>Clase C (20%):</strong> S/3,001-5,000 — Menor rotación</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 6: FACTOR MAQUINARIA                                    -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap6">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap6')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap6', 'Cap6_Maquinaria')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-microchip"></i> Capítulo 6 · FACTOR MAQUINARIA</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-server"></i> Maquinaria y equipos</h3>
+                    <ul>
+                        <li><strong>Servidores:</strong> 3 unidades (alta disponibilidad)</li>
+                        <li><strong>Estaciones de trabajo:</strong> 25 equipos</li>
+                        <li><strong>Kioscos biométricos:</strong> 2 unidades</li>
+                        <li><strong>Sistemas de respaldo:</strong> UPS, generador</li>
+                        <li><strong>Infraestructura de red:</strong> Fibra óptica, switches</li>
+                    </ul>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-microchip"></i> Especificaciones técnicas</h4>
+                        <ul>
+                            <li>Servidores: Intel Xeon, 64GB RAM, 2TB SSD</li>
+                            <li>Estaciones: Intel i7, 16GB RAM, 512GB SSD</li>
+                            <li>UPS: 10 KVA (autonomía 2 horas)</li>
+                            <li>Ancho de banda: 100 Mbps dedicado</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h3><i class="fas fa-calculator"></i> Determinación del número de máquinas</h3>
+                    <div class="stat-box">
+                        <div class="number"><i class="fas fa-server"></i>3</div>
+                        <div class="label">Servidores (modelo N+1)</div>
+                        <div class="number" style="font-size:1.8rem; margin-top:6px;"><i class="fas fa-desktop"></i>25</div>
+                        <div class="label">Estaciones de trabajo</div>
+                        <div class="number" style="font-size:1.8rem; margin-top:6px;"><i class="fas fa-fingerprint"></i>2</div>
+                        <div class="label">Kioscos biométricos</div>
+                        <div class="number" style="font-size:1.8rem; margin-top:6px;"><i class="fas fa-print"></i>2</div>
+                        <div class="label">Impresoras de alta velocidad</div>
+                    </div>
+                    <div class="conclusion-box" style="margin-top:14px;">
+                        <strong>✅ Cálculo:</strong> 6 estaciones de atención + 6 de análisis = 12 estaciones totales para 25 colaboradores.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 7: FACTOR HOMBRE                                        -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap7">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap7')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap7', 'Cap7_Hombre')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-users"></i> Capítulo 7 · FACTOR HOMBRE</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-user-tie"></i> Personal requerido (Año 1)</h3>
+                    <ul>
+                        <li><strong>Gerente de operaciones:</strong> 1</li>
+                        <li><strong>Asesores de atención MYPE:</strong> 4</li>
+                        <li><strong>Analistas de crédito:</strong> 4</li>
+                        <li><strong>Especialistas TI/DevOps:</strong> 2</li>
+                        <li><strong>Asistente administrativo:</strong> 1</li>
+                        <li><strong>Cobranza y seguimiento:</strong> 1</li>
+                        <li><strong>Limpieza y apoyo:</strong> 1</li>
+                        <li><strong>TOTAL:</strong> 14 colaboradores</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3><i class="fas fa-clipboard-list"></i> Consideraciones ergonómicas</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle" style="color:#4a2c8a;"></i> Sillas regulables con apoyo lumbar</li>
+                        <li><i class="fas fa-check-circle" style="color:#4a2c8a;"></i> Monitores a altura de ojos (50-70 cm)</li>
+                        <li><i class="fas fa-check-circle" style="color:#4a2c8a;"></i> Iluminación 500 lux en análisis</li>
+                        <li><i class="fas fa-check-circle" style="color:#4a2c8a;"></i> Pausas activas cada 2 horas</li>
+                        <li><i class="fas fa-check-circle" style="color:#4a2c8a;"></i> Accesibilidad universal (Norma A.120 RNE)</li>
+                    </ul>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-coins"></i> Costo mensual de planilla</h4>
+                        <ul>
+                            <li><strong>Total:</strong> S/ 98,200</li>
+                            <li>Analistas: 8 × S/ 3,500 = S/ 28,000</li>
+                            <li>Especialistas: 5 × S/ 4,500 = S/ 22,500</li>
+                            <li>Operadores: 4 × S/ 2,800 = S/ 11,200</li>
+                            <li>Ingenieros: 3 × S/ 5,500 = S/ 16,500</li>
+                            <li>Administración: 5 × S/ 4,000 = S/ 20,000</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 8: FACTOR MOVIMIENTO                                    -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap8">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap8')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap8', 'Cap8_Movimiento')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-truck"></i> Capítulo 8 · FACTOR MOVIMIENTO</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-arrows-spin"></i> Tipos de flujo</h3>
+                    <ul>
+                        <li><strong>Flujo del cliente:</strong> 28 metros de recorrido</li>
+                        <li><strong>Flujo del expediente:</strong> 92% digital (red interna)</li>
+                        <li><strong>Flujo de insumos:</strong> 12 metros (puerta de servicio → almacén)</li>
+                    </ul>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-cube"></i> Unidad de carga</h4>
+                        <ul>
+                            <li>Expediente físico: Fólder A4 con QR</li>
+                            <li>Caja archivera: 40×30×25 cm (25 expedientes)</li>
+                            <li>Insumos: Caja master sobre carretilla</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h3><i class="fas fa-toolbox"></i> Equipo de acarreo</h3>
+                    <ul>
+                        <li><strong>Carretilla plegable:</strong> 1 (75 kg)</li>
+                        <li><strong>Carrito portadocumentos:</strong> 1 (3 bandejas)</li>
+                        <li><strong>Escalera tipo tijera:</strong> 1 (2 pasos)</li>
+                    </ul>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-network-wired"></i> Trayectoria fija</h4>
+                        <ul>
+                            <li>Red de datos: Cableado 6A con 40% de reserva</li>
+                            <li>Ancho de banda: 100 Mbps dedicado</li>
+                            <li>Flujo digital: 400 MB/día (400 solicitudes)</li>
+                        </ul>
+                    </div>
+                    <div class="conclusion-box" style="margin-top:14px;">
+                        <strong>✅ Principio rector:</strong> El mejor manejo de materiales es el que no existe — 92% del expediente se mueve por la red.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 9: FACTOR EDIFICIO                                      -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap9">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap9')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap9', 'Cap9_Edificio')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-city"></i> Capítulo 9 · FACTOR EDIFICIO</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-building"></i> Características del edificio</h3>
+                    <ul>
+                        <li><strong>Área total:</strong> 300 m² (200 m² 1er piso + 100 m² 2do piso)</li>
+                        <li><strong>Altura libre:</strong> 3.0 m (1er piso) / 2.7 m (2do piso)</li>
+                        <li><strong>Pisos:</strong> Porcelanato antideslizante / piso laminado</li>
+                        <li><strong>Puertas:</strong> 4 accesos (2 principales, 2 emergencia)</li>
+                        <li><strong>Ventanas:</strong> Fachada vidriada con control solar</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3><i class="fas fa-hard-hat"></i> Estudio de suelos</h3>
+                    <ul>
+                        <li><strong>Tipo de suelo:</strong> S2 (Norma E.030)</li>
+                        <li><strong>Capacidad portante:</strong> 1.8 kg/cm²</li>
+                        <li><strong>Nivel freático:</strong> > 4 m</li>
+                    </ul>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-route"></i> Vías de circulación</h4>
+                        <ul>
+                            <li><strong>Pasillo principal:</strong> 1.80 m</li>
+                            <li><strong>Pasillos internos:</strong> 1.20 m</li>
+                            <li><strong>Circulaciones:</strong> 22% del área total</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 10: FACTOR ESPERA                                      -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap10">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap10')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap10', 'Cap10_Espera')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-hourglass-half"></i> Capítulo 10 · FACTOR ESPERA</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-users"></i> Espera de clientes</h3>
+                    <ul>
+                        <li><strong>Turnero digital:</strong> 6 llegadas/hora (pico)</li>
+                        <li><strong>Cola promedio:</strong> 4 personas</li>
+                        <li><strong>Sala de espera:</strong> 10 asientos + espacio para silla de ruedas</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3><i class="fas fa-box-archive"></i> Almacén y archivo</h3>
+                    <ul>
+                        <li><strong>Archivo documental:</strong> 12 m² (10 años de custodia)</li>
+                        <li><strong>Almacén de insumos:</strong> 6 m²</li>
+                        <li><strong>Depósito de limpieza:</strong> 2 m²</li>
+                        <li><strong>Política FIFO:</strong> Primero en entrar, primero en salir</li>
+                    </ul>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-clock"></i> Tiempos de espera</h4>
+                        <ul>
+                            <li><strong>Cliente en sala:</strong> 8.5 min promedio</li>
+                            <li><strong>Expediente en análisis:</strong> &lt; 4 horas (SLA)</li>
+                            <li><strong>Documentos al archivo:</strong> Recorrido diario</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 11: FACTOR SERVICIO                                    -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap11">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap11')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap11', 'Cap11_Servicio')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-concierge-bell"></i> Capítulo 11 · FACTOR SERVICIO</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-user-cog"></i> Servicios al personal</h3>
+                    <ul>
+                        <li><strong>Comedor-kitchenette:</strong> 9 m² (capacidad 6 personas)</li>
+                        <li><strong>SSHH:</strong> 2 baterías personal + 1 accesible clientes</li>
+                        <li><strong>Tópico:</strong> Botiquín + camilla plegable</li>
+                        <li><strong>Iluminación:</strong> 500 lux (análisis) / 300 lux (circulación)</li>
+                        <li><strong>Extintores:</strong> PQS y CO₂ cada 15 m</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3><i class="fas fa-shield-alt"></i> Servicios críticos</h3>
+                    <ul>
+                        <li><strong>Data center:</strong> 8 m² con climatización de precisión</li>
+                        <li><strong>UPS:</strong> 30 min de autonomía (data center)</li>
+                        <li><strong>Internet:</strong> 2 proveedores (redundancia)</li>
+                        <li><strong>Seguridad:</strong> Cámaras IP con grabación 60 días</li>
+                        <li><strong>Mantenimiento:</strong> Preventivo trimestral de equipos</li>
+                    </ul>
+                    <div class="conclusion-box" style="margin-top:14px;">
+                        <strong>✅ Servicio más crítico:</strong> Internet redundante — 2 proveedores con rutas físicas distintas.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 12: FACTOR MEDIO AMBIENTE                               -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap12">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap12')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap12', 'Cap12_MedioAmbiente')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-leaf"></i> Capítulo 12 · FACTOR MEDIO AMBIENTE</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-recycle"></i> Gestión ambiental</h3>
+                    <ul>
+                        <li><strong>Política de papel cero:</strong> 92% digital</li>
+                        <li><strong>Ahorro estimado:</strong> 260,000 hojas/año</li>
+                        <li><strong>Iluminación:</strong> 100% LED con sensores de presencia</li>
+                        <li><strong>RAEE:</strong> Disposición con EO-RS registrada en MINAM</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3><i class="fas fa-chart-bar"></i> Costos ambientales</h3>
+                    <div class="stat-box">
+                        <div class="number"><i class="fas fa-leaf"></i>16,300</div>
+                        <div class="label">Ahorro anual (S/) por políticas ambientales</div>
+                        <div class="number" style="font-size:1.5rem; margin-top:6px;"><i class="fas fa-coins"></i>7,300</div>
+                        <div class="label">Costo anual de gestión ambiental (S/)</div>
+                        <div style="margin-top:8px; background:#d1fae5; padding:8px 12px; border-radius:12px;">
+                            <strong>Balance positivo:</strong> S/ 9,000 de beneficio neto anual
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 13: FACTOR CAMBIO                                      -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap13">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap13')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap13', 'Cap13_Cambio')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-sync-alt"></i> Capítulo 13 · FACTOR CAMBIO</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-rocket"></i> Crecimiento escalonado</h3>
+                    <ul>
+                        <li><strong>Etapa 1 (Año 1-2):</strong> 9,800–16,200 solicitudes/año</li>
+                        <li><strong>Etapa 2 (Año 3-4):</strong> 21,500–24,000 solicitudes/año</li>
+                        <li><strong>Etapa 3 (Año 5+):</strong> &gt; 24,000 solicitudes/año</li>
+                        <li><strong>Reserva de crecimiento:</strong> 25 m² en el local</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3><i class="fas fa-certificate"></i> Certificaciones objetivo</h3>
+                    <ul>
+                        <li><strong>ISO/IEC 27001:</strong> Año 2 (seguridad de la información)</li>
+                        <li><strong>ISO 9001:</strong> Año 3 (calidad)</li>
+                        <li><strong>Buenas Prácticas SBS:</strong> En proceso</li>
+                    </ul>
+                    <div class="conclusion-box" style="margin-top:14px;">
+                        <strong>✅ Ventaja competitiva:</strong> Velocidad (aprobación &lt; 5h) y conocimiento del cliente regional.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 14: CÁLCULO DE ÁREAS (GUERCHET)                         -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap14">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap14')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap14', 'Cap14_Areas')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-calculator"></i> Capítulo 14 · CÁLCULO DE ÁREAS (GUERCHET)</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-table"></i> Resumen de áreas</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Área</th><th>Requerido (m²)</th><th>Asignado (m²)</th></tr></thead>
+                            <tbody>
+                                <tr><td>Recepción y sala de espera</td><td>26.0</td><td>28</td></tr>
+                                <tr><td>Atención al cliente</td><td>54.5</td><td>56</td></tr>
+                                <tr><td>Análisis crediticio</td><td>29.4</td><td>32</td></tr>
+                                <tr><td>TI / Data center</td><td>9.0</td><td>10</td></tr>
+                                <tr><td>Gerencia y administración</td><td>18.6</td><td>20</td></tr>
+                                <tr><td>Sala de reuniones / aula</td><td>18.0</td><td>18</td></tr>
+                                <tr><td>Archivo documental</td><td>12.0</td><td>12</td></tr>
+                                <tr><td>Almacén + depósito</td><td>8.0</td><td>8</td></tr>
+                                <tr><td>Servicios al personal</td><td>24.0</td><td>26</td></tr>
+                                <tr><td>SSHH clientes</td><td>5.0</td><td>5</td></tr>
+                                <tr><td><strong>Subtotal</strong></td><td><strong>204.5</strong></td><td><strong>215</strong></td></tr>
+                                <tr><td>Circulaciones (22%)</td><td>45.0</td><td>60</td></tr>
+                                <tr><td>Reserva de crecimiento</td><td>---</td><td>25</td></tr>
+                                <tr><td><strong>TOTAL</strong></td><td><strong>249.5</strong></td><td><strong>300</strong></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <div class="chart-container">
+                        <canvas id="areaChart"></canvas>
+                    </div>
+                    <div class="conclusion-box" style="margin-top:14px;">
+                        <strong>✅ Validación:</strong> El requerimiento de 249.5 m² valida el local de 300 m², dejando 25 m² de reserva para crecimiento.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 15: DISTRIBUCIÓN GENERAL (SLP)                           -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap15">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap15')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap15', 'Cap15_DistribucionGral')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-sitemap"></i> Capítulo 15 · DISTRIBUCIÓN GENERAL (SLP)</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-table"></i> Tabla relacional</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Relación</th><th>Valor</th><th>Motivo</th></tr></thead>
+                            <tbody>
+                                <tr><td>Recepción ↔ Atención</td><td><span class="badge-pill badge-yellow">A</span></td><td>Flujo del cliente</td></tr>
+                                <tr><td>Atención ↔ Análisis</td><td><span class="badge-pill badge-yellow">A</span></td><td>Flujo de expedientes</td></tr>
+                                <tr><td>Análisis ↔ TI</td><td><span class="badge-pill badge-yellow">A</span></td><td>Integración de sistemas</td></tr>
+                                <tr><td>TI ↔ Archivo</td><td><span class="badge-pill badge-red">X</span></td><td>Confidencialidad</td></tr>
+                                <tr><td>Gerencia ↔ Análisis</td><td><span class="badge-pill badge-purple">E</span></td><td>Supervisión</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;">Distribución práctica</h4>
+                        <ul>
+                            <li><strong>1er piso:</strong> Recepción, espera, atención, kioscos, SSHH clientes</li>
+                            <li><strong>2do piso:</strong> Análisis, TI, gerencia, archivo, servicios personal</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="chart-container">
+                        <canvas id="slpChart"></canvas>
+                    </div>
+                    <div class="conclusion-box" style="margin-top:14px;">
+                        <strong>✅ Disposición seleccionada:</strong> Cadena del cliente en 1er piso, cadena del expediente en 2do piso — reduce recorrido en 24%.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 16: DISTRIBUCIÓN DE DETALLE                             -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap16">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap16')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap16', 'Cap16_DistribucionDetalle')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-route"></i> Capítulo 16 · DISTRIBUCIÓN DE DETALLE</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-walking"></i> Recorrido del cliente (P1)</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Actividad</th><th>Distancia (m)</th><th>Tiempo (min)</th></tr></thead>
+                            <tbody>
+                                <tr><td>Ingreso y turnero</td><td>4</td><td>1.0</td></tr>
+                                <tr><td>Espera en sala</td><td>6</td><td>8.5</td></tr>
+                                <tr><td>Traslado a estación</td><td>9</td><td>0.3</td></tr>
+                                <tr><td>Onboarding + biometría</td><td>---</td><td>22.0</td></tr>
+                                <tr><td>Espera scoring</td><td>---</td><td>0.7</td></tr>
+                                <tr><td>Firma digital</td><td>---</td><td>9.0</td></tr>
+                                <tr><td>Traslado a salida</td><td>9</td><td>0.3</td></tr>
+                                <tr><td><strong>TOTAL</strong></td><td><strong>28</strong></td><td><strong>41.8</strong></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h3><i class="fas fa-arrows-left-right"></i> Análisis de transportación</h3>
+                    <div class="stat-box">
+                        <div class="number"><i class="fas fa-route"></i>436</div>
+                        <div class="label">Esfuerzo de recorrido (m-viaje/día) — Alternativa A</div>
+                        <div class="number" style="font-size:1.5rem; margin-top:6px;"><i class="fas fa-arrow-down" style="color:#10b981;"></i> -24%</div>
+                        <div class="label">Reducción vs. Alternativa B (distribución lineal)</div>
+                    </div>
+                    <div class="conclusion-box" style="margin-top:14px;">
+                        <strong>✅ Alternativa A:</strong> Archivo en 2do piso genera 19.6 m-viaje/día vs 24.8 m-viaje/día en 1er piso.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 17: EVALUACIÓN DE ALTERNATIVAS                           -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap17">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap17')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap17', 'Cap17_Evaluacion')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-balance-scale"></i> Capítulo 17 · EVALUACIÓN DE ALTERNATIVAS</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-table"></i> Evaluación multifactor</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Factor</th><th>Peso</th><th>Alt. A</th><th>Alt. B</th></tr></thead>
+                            <tbody>
+                                <tr><td>Flujo y distancias</td><td>0.25</td><td>9 → 2.25</td><td>6 → 1.50</td></tr>
+                                <tr><td>Confidencialidad</td><td>0.20</td><td>9 → 1.80</td><td>5 → 1.00</td></tr>
+                                <tr><td>Experiencia del cliente</td><td>0.20</td><td>8 → 1.60</td><td>7 → 1.40</td></tr>
+                                <tr><td>Flexibilidad</td><td>0.15</td><td>9 → 1.35</td><td>6 → 0.90</td></tr>
+                                <tr><td>Costo implementación</td><td>0.10</td><td>6 → 0.60</td><td>8 → 0.80</td></tr>
+                                <tr><td>Supervisión</td><td>0.10</td><td>6 → 0.60</td><td>8 → 0.80</td></tr>
+                                <tr><td><strong>TOTAL</strong></td><td><strong>1.00</strong></td><td><strong>8.20</strong></td><td><strong>6.40</strong></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h3><i class="fas fa-coins"></i> Comparación de costos (5 años)</h3>
+                    <div class="stat-box">
+                        <div class="number" style="color:#4a2c8a;"><i class="fas fa-check-circle"></i>S/ 425,000</div>
+                        <div class="label">Alternativa A — DISPOSICIÓN SELECCIONADA</div>
+                        <div class="number" style="font-size:1.5rem; color:#6b7280; margin-top:6px;">S/ 474,000</div>
+                        <div class="label">Alternativa B</div>
+                        <div style="margin-top:8px; background:#d1fae5; padding:8px 12px; border-radius:12px;">
+                            <strong>Ahorro:</strong> S/ 49,000 en 5 años con la Alternativa A
+                        </div>
+                    </div>
+                    <div class="conclusion-box" style="margin-top:14px;">
+                        <strong>✅ Decisión:</strong> Alternativa A (8.20 vs 6.40) — Disposición por proceso con cadena cliente en 1er piso y expediente en 2do.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- CAPÍTULO 18: IMPLEMENTACIÓN                                      -->
+        <!-- ============================================================ -->
+        <section class="chapter-card" id="cap18">
+            <div class="chapter-toolbar">
+                <button class="btn btn-print-chapter" onclick="printChapter('cap18')">
+                    <i class="fas fa-print"></i> Imprimir este capítulo
+                </button>
+                <button class="btn btn-pdf-chapter" onclick="exportChapterPDF('cap18', 'Cap18_Implementacion')">
+                    <i class="fas fa-file-pdf"></i> Exportar PDF
+                </button>
+            </div>
+            <h2><i class="fas fa-rocket"></i> Capítulo 18 · IMPLEMENTACIÓN</h2>
+            <div class="grid-2">
+                <div>
+                    <h3><i class="fas fa-clock"></i> Cronograma (10 semanas)</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Actividad</th><th>Semana</th></tr></thead>
+                            <tbody>
+                                <tr><td>Firma de contrato y licencias</td><td>1-2</td></tr>
+                                <tr><td>Obras civiles y tabiquería</td><td>2-5</td></tr>
+                                <tr><td>Instalaciones eléctricas y cableado</td><td>3-6</td></tr>
+                                <tr><td>Data center y enlaces redundantes</td><td>5-7</td></tr>
+                                <tr><td>Mobiliario y equipos</td><td>6-8</td></tr>
+                                <tr><td>Señalética, seguridad e ITSE</td><td>7-9</td></tr>
+                                <tr><td>Migración y pruebas integrales</td><td>8-9</td></tr>
+                                <tr><td>Capacitación y marcha blanca</td><td>9-10</td></tr>
+                                <tr><td><strong>Apertura al público</strong></td><td><strong>10</strong></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h3><i class="fas fa-check-double"></i> Hitos críticos</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle" style="color:#10b981;"></i> Certificado ITSE</li>
+                        <li><i class="fas fa-check-circle" style="color:#10b981;"></i> Pruebas de continuidad del data center</li>
+                        <li><i class="fas fa-check-circle" style="color:#10b981;"></i> Personal capacitado en flujo completo</li>
+                    </ul>
+                    <div class="stat-box" style="margin-top:14px;">
+                        <h4 style="font-size:0.85rem; color:#4a2c8a;"><i class="fas fa-users"></i> Marcha blanca</h4>
+                        <ul>
+                            <li><strong>Grupo piloto:</strong> 40 MYPE invitadas</li>
+                            <li><strong>Ajustes realizados:</strong> Turnero, altura de kioscos, disposición de asientos</li>
+                            <li><strong>Revisión post-implementación:</strong> A los 6 meses</li>
+                        </ul>
+                    </div>
+                    <div class="conclusion-box" style="margin-top:14px;">
+                        <strong>✅ Inversión total:</strong> S/ 485,000 — Implementación en 10 semanas.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- FOOTER                                                          -->
+        <!-- ============================================================ -->
+        <footer>
+            Dashboard de Disposición de Planta · Microcréditos Digitales MYPE · Datos basados en informe técnico 2025-2026<br>
+            <i class="fas fa-brain" style="color:#4a2c8a;"></i> Diseñado con metodología QFD + SLP + Guerchet · <i class="fas fa-chart-line" style="color:#f59e0b;"></i> Datos: INEI, SBS, PRODUCE, Google Trends
+        </footer>
+
+    </div>
+    <!-- fin container -->
+
+    <script>
+        // ===== FUNCIÓN PARA IMPRIMIR UN CAPÍTULO INDIVIDUAL =====
+        function printChapter(chapterId) {
+            // Obtener el capítulo
+            const chapterElement = document.getElementById(chapterId);
+            if (!chapterElement) return;
+
+            // Eliminar cualquier área de impresión anterior
+            const oldPrintArea = document.getElementById('printArea');
+            if (oldPrintArea) {
+                oldPrintArea.remove();
+            }
+
+            // Crear un contenedor de impresión
+            const printArea = document.createElement('div');
+            printArea.id = 'printArea';
+
+            // Clonar el capítulo
+            const chapterClone = chapterElement.cloneNode(true);
+            // Remover el toolbar del clon
+            const toolbarClone = chapterClone.querySelector('.chapter-toolbar');
+            if (toolbarClone) toolbarClone.remove();
+
+            // Asegurar que el capítulo sea visible
+            chapterClone.style.display = 'block';
+            chapterClone.style.padding = '20px';
+            chapterClone.style.borderRadius = '0';
+            chapterClone.style.boxShadow = 'none';
+            chapterClone.style.border = 'none';
+            chapterClone.style.background = 'white';
+
+            // Crear un header para la impresión
+            const headerPrint = document.createElement('div');
+            headerPrint.className = 'header';
+            headerPrint.style.cssText = `
+                background: linear-gradient(135deg, #2d1b69, #4a2c8a);
+                padding: 16px 24px;
+                border-radius: 12px;
+                margin-bottom: 16px;
+                color: white;
+                font-family: 'Inter', sans-serif;
+            `;
+            headerPrint.innerHTML = `
+                <h1 style="font-size:1.3rem; font-weight:700; margin:0;">
+                    <i class="fas fa-chart-pie" style="color:#fbbf24;"></i> 
+                    Microcréditos Digitales · MYPE
+                </h1>
+                <div style="font-size:0.8rem; opacity:0.85; margin-top:2px;">
+                    Dashboard de Disposición de Planta · QFD + Inclusión Financiera · Perú 2025
+                </div>
+                <div style="margin-top:4px; font-size:0.7rem; opacity:0.6;">
+                    <i class="far fa-calendar"></i> 2026-07-24 · <i class="fas fa-circle" style="color:#10b981;"></i> Operativo
+                </div>
+            `;
+
+            // Armar el contenido de impresión
+            printArea.appendChild(headerPrint);
+            printArea.appendChild(chapterClone);
+
+            // Añadir footer
+            const footerPrint = document.createElement('div');
+            footerPrint.style.cssText = `
+                text-align: center;
+                font-size: 0.65rem;
+                color: #6b7280;
+                margin-top: 20px;
+                padding-top: 12px;
+                border-top: 1px solid #e5e7eb;
+                font-family: 'Inter', sans-serif;
+            `;
+            footerPrint.innerHTML = `
+                Dashboard de Disposición de Planta · Microcréditos Digitales MYPE · Datos basados en informe técnico 2025-2026<br>
+                <i class="fas fa-brain" style="color:#4a2c8a;"></i> Diseñado con metodología QFD + SLP + Guerchet · 
+                <i class="fas fa-chart-line" style="color:#f59e0b;"></i> Datos: INEI, SBS, PRODUCE, Google Trends
+            `;
+            printArea.appendChild(footerPrint);
+
+            // Añadir al DOM
+            printArea.style.position = 'fixed';
+            printArea.style.left = '0';
+            printArea.style.top = '0';
+            printArea.style.width = '100%';
+            printArea.style.zIndex = '99999';
+            printArea.style.background = 'white';
+            printArea.style.padding = '20px';
+            printArea.style.display = 'block';
+            printArea.style.visibility = 'visible';
+            printArea.style.overflow = 'visible';
+            document.body.appendChild(printArea);
+
+            // Forzar renderizado y luego imprimir
+            setTimeout(() => {
+                window.print();
+
+                // Remover después de imprimir (o después de un tiempo)
+                setTimeout(() => {
+                    const area = document.getElementById('printArea');
+                    if (area) {
+                        area.remove();
+                    }
+                }, 500);
+            }, 300);
+        }
+
+        // ===== FUNCIÓN PARA EXPORTAR UN CAPÍTULO INDIVIDUAL A PDF =====
+        async function exportChapterPDF(chapterId, fileName) {
+            const btn = document.querySelector(`#${chapterId} .btn-pdf-chapter`);
+            if (!btn) return;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+            btn.disabled = true;
+
+            try {
+                const chapterElement = document.getElementById(chapterId);
+                if (!chapterElement) {
+                    throw new Error('Capítulo no encontrado');
+                }
+
+                // Crear contenedor temporal
+                const tempContainer = document.createElement('div');
+                tempContainer.style.width = '1200px';
+                tempContainer.style.padding = '20px';
+                tempContainer.style.background = 'white';
+                tempContainer.style.fontFamily = 'Inter, sans-serif';
+
+                // Clonar el capítulo
+                const chapterClone = chapterElement.cloneNode(true);
+                const toolbarClone = chapterClone.querySelector('.chapter-toolbar');
+                if (toolbarClone) toolbarClone.remove();
+                chapterClone.style.display = 'block';
+                chapterClone.style.padding = '20px';
+                chapterClone.style.borderRadius = '0';
+                chapterClone.style.boxShadow = 'none';
+                chapterClone.style.border = 'none';
+
+                // Header
+                const headerClone = document.createElement('header');
+                headerClone.style.cssText = `
+                    background: linear-gradient(135deg, #2d1b69, #4a2c8a);
+                    padding: 20px 30px;
+                    border-radius: 16px;
+                    margin-bottom: 20px;
+                    color: white;
+                `;
+                headerClone.innerHTML = `
+                    <h1 style="font-size:1.5rem; font-weight:700; margin:0;">
+                        <i class="fas fa-chart-pie" style="color:#fbbf24;"></i> 
+                        Microcréditos Digitales · MYPE
+                    </h1>
+                    <div style="font-size:0.85rem; opacity:0.85; margin-top:2px;">
+                        Dashboard de Disposición de Planta · QFD + Inclusión Financiera · Perú 2025
+                    </div>
+                    <div style="margin-top:6px; font-size:0.75rem; opacity:0.6;">
+                        <i class="far fa-calendar"></i> 2026-07-24 · <i class="fas fa-circle" style="color:#10b981;"></i> Operativo
+                    </div>
+                `;
+
+                tempContainer.appendChild(headerClone);
+                tempContainer.appendChild(chapterClone);
+
+                // Footer
+                const footerClone = document.createElement('footer');
+                footerClone.style.cssText = `
+                    text-align: center;
+                    font-size: 0.7rem;
+                    color: #6b7280;
+                    margin-top: 30px;
+                    padding-top: 16px;
+                    border-top: 1px solid #e5e7eb;
+                `;
+                footerClone.innerHTML = `
+                    Dashboard de Disposición de Planta · Microcréditos Digitales MYPE · Datos basados en informe técnico 2025-2026<br>
+                    <i class="fas fa-brain" style="color:#4a2c8a;"></i> Diseñado con metodología QFD + SLP + Guerchet · 
+                    <i class="fas fa-chart-line" style="color:#f59e0b;"></i> Datos: INEI, SBS, PRODUCE, Google Trends
+                `;
+                tempContainer.appendChild(footerClone);
+
+                // Estilos
+                const styleClone = document.createElement('style');
+                styleClone.textContent = `
+                    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+                    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+                    .stat-box { background: #f8f7fc; border-radius: 14px; padding: 14px 18px; border: 1px solid #ede9fe; }
+                    .stat-box .number { font-size: 1.8rem; font-weight: 800; color: #4a2c8a; }
+                    .stat-box .label { font-size: 0.75rem; color: #6b7280; }
+                    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #ede9fe; }
+                    table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+                    th, td { border: 1px solid #ede9fe; padding: 6px 10px; text-align: center; }
+                    th { background: #f5f3ff; font-weight: 700; color: #2d1b69; }
+                    .badge-pill { display: inline-block; padding: 2px 10px; border-radius: 40px; font-size: 0.6rem; font-weight: 700; }
+                    .badge-yellow { background: #fef3c7; color: #92400e; }
+                    .badge-purple { background: #ede9fe; color: #4a2c8a; }
+                    .badge-green { background: #d1fae5; color: #065f46; }
+                    .badge-red { background: #fee2e2; color: #991b1b; }
+                    .conclusion-box { background: #f5f3ff; border-left: 4px solid #4a2c8a; padding: 12px 18px; border-radius: 14px; margin-top: 12px; }
+                    .chart-container { background: #fff; border-radius: 14px; padding: 8px; border: 1px solid #ede9fe; }
+                    .chart-container canvas { max-height: 180px; width: 100% !important; }
+                    .chapter-card h2 { font-size: 1.3rem; color: #2d1b69; border-bottom: 3px solid #ede9fe; padding-bottom: 10px; margin-bottom: 18px; }
+                    .chapter-card h3 { font-size: 0.9rem; color: #4a2c8a; margin: 12px 0 6px 0; }
+                    .chapter-card ul, .chapter-card ol { padding-left: 18px; line-height: 1.7; }
+                    .trend.up { color: #10b981; }
+                    .trend.down { color: #ef4444; }
+                    ul { list-style-type: disc; }
+                `;
+                tempContainer.appendChild(styleClone);
+
+                tempContainer.style.position = 'absolute';
+                tempContainer.style.left = '-9999px';
+                tempContainer.style.top = '0';
+                tempContainer.style.width = '1200px';
+                tempContainer.style.background = 'white';
+                document.body.appendChild(tempContainer);
+
+                await new Promise(resolve => setTimeout(resolve, 800));
+
+                const canvas = await html2canvas(tempContainer, {
+                    scale: 1.8,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    width: 1200,
+                    height: tempContainer.scrollHeight,
+                    windowWidth: 1200,
+                    windowHeight: tempContainer.scrollHeight,
+                });
+
+                document.body.removeChild(tempContainer);
+
+                const { jsPDF } = window.jspdf;
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const pdf = new jsPDF('l', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+
+                const imgRatio = canvas.width / canvas.height;
+                let imgWidth = pdfWidth - 20;
+                let imgHeight = imgWidth / imgRatio;
+
+                if (imgHeight > pdfHeight - 20) {
+                    imgHeight = pdfHeight - 20;
+                    imgWidth = imgHeight * imgRatio;
+                }
+
+                const xOffset = (pdfWidth - imgWidth) / 2;
+                const yOffset = (pdfHeight - imgHeight) / 2;
+
+                pdf.addImage(imgData, 'JPEG', xOffset, yOffset, imgWidth, imgHeight);
+                pdf.save(`Dashboard_${fileName}.pdf`);
+
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Exportado ✓';
+                btn.disabled = false;
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 3000);
+
+            } catch (error) {
+                console.error('Error al exportar capítulo:', error);
+                btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+                btn.disabled = false;
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 3000);
+            }
+        }
+
+        // ===== NAVEGACIÓN POR TABS =====
+        const tabs = document.querySelectorAll('.tab-btn');
+        const chapters = document.querySelectorAll('.chapter-card');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const target = tab.dataset.chapter;
+                chapters.forEach(c => c.classList.remove('active'));
+                document.getElementById(target).classList.add('active');
+            });
+        });
+
+        // ===== BOTÓN "VER TODOS" =====
+        document.getElementById('toggleAllBtn').addEventListener('click', () => {
+            const allOpen = document.querySelectorAll('.chapter-card.active').length === chapters.length;
+            chapters.forEach(c => c.classList.toggle('active', !allOpen));
+            tabs.forEach(t => t.classList.toggle('active', !allOpen));
+        });
+
+        // ================================================================
+        // GRÁFICOS CON CHART.JS
+        // ================================================================
+
+        // 1. QFD Scores
+        const ctx1 = document.getElementById('qfdScoresChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Scoring', 'Tiempo Aprob.', 'Documentación', 'Desembolso'],
+                datasets: [{
+                    label: 'Puntaje Técnico',
+                    data: [84.5, 73.2, 71.0, 70.8],
+                    backgroundColor: ['#4a2c8a', '#7c3aed', '#a78bfa', '#c4b5d4'],
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 2. Localización
+        const ctx2 = document.getElementById('locationChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Huánuco', 'Lima', 'Arequipa'],
+                datasets: [{
+                    label: 'Puntaje ponderado',
+                    data: [7.14, 6.58, 6.52],
+                    backgroundColor: ['#4a2c8a', '#7c3aed', '#a78bfa'],
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 3. Capacidad
+        const ctx3 = document.getElementById('capacityChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'line',
+            data: {
+                labels: ['Año 1', 'Año 2', 'Año 3', 'Año 5'],
+                datasets: [{
+                    label: 'Solicitudes procesadas',
+                    data: [9800, 16200, 21500, 30100],
+                    borderColor: '#4a2c8a',
+                    backgroundColor: 'rgba(74, 44, 138, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#4a2c8a',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 4. Layout áreas
+        const ctx4 = document.getElementById('layoutChart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'doughnut',
+            data: {
+                labels: ['Análisis', 'Aprobación', 'Desembolso', 'Soporte', 'Administración', 'Servicios'],
+                datasets: [{
+                    data: [24, 16, 12, 10, 14, 24],
+                    backgroundColor: ['#4a2c8a', '#7c3aed', '#a78bfa', '#c4b5d4', '#ddd6fe', '#ede9fe'],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } }
+            }
+        });
+
+        // 5. ABC
+        const ctx5 = document.getElementById('abcChart').getContext('2d');
+        new Chart(ctx5, {
+            type: 'bar',
+            data: {
+                labels: ['Clase A (45%)', 'Clase B (35%)', 'Clase C (20%)'],
+                datasets: [{
+                    label: 'Volumen',
+                    data: [45, 35, 20],
+                    backgroundColor: ['#f59e0b', '#7c3aed', '#10b981'],
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, max: 60, ticks: { callback: v => v + '%' } } }
+            }
+        });
+
+        // 6. Áreas Guerchet
+        const ctx6 = document.getElementById('areaChart').getContext('2d');
+        new Chart(ctx6, {
+            type: 'bar',
+            data: {
+                labels: ['Requerido', 'Asignado'],
+                datasets: [{
+                    label: 'Área (m²)',
+                    data: [249.5, 300],
+                    backgroundColor: ['#7c3aed', '#4a2c8a'],
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // 7. SLP Relaciones
+        const ctx7 = document.getElementById('slpChart').getContext('2d');
+        new Chart(ctx7, {
+            type: 'radar',
+            data: {
+                labels: ['Flujo', 'Confidencialidad', 'Experiencia', 'Flexibilidad', 'Costo', 'Supervisión'],
+                datasets: [{
+                    label: 'Alternativa A',
+                    data: [9, 9, 8, 9, 6, 6],
+                    borderColor: '#4a2c8a',
+                    backgroundColor: 'rgba(74, 44, 138, 0.2)',
+                    pointBackgroundColor: '#4a2c8a',
+                }, {
+                    label: 'Alternativa B',
+                    data: [6, 5, 7, 6, 8, 8],
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                    pointBackgroundColor: '#f59e0b',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: { r: { min: 0, max: 10 } },
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 9 } } } }
+            }
+        });
+    </script>
+
+</body>
+</html>
